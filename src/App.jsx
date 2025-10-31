@@ -18,7 +18,7 @@ const mockProblems = [
     difficulty_level: "easy",
     year: 2024,
     problem_number: 1,
-    options: [
+    opions: [
       {
         id: 1,
         option_letter: "A",
@@ -595,9 +595,12 @@ const Button = ({
   );
 };
 
-const Card = ({ children, className = "", padding = "p-6" }) => (
+const Card = ({ children, className = "", padding = "p-6", onClick }) => (
   <div
-    className={`bg-white rounded-xl shadow-sm border border-gray-200 ${padding} ${className}`}
+    onClick={onClick}
+    className={`bg-white rounded-xl shadow-sm border border-gray-200 ${padding} ${className} ${
+      onClick ? "cursor-pointer" : ""
+    }`}
   >
     {children}
   </div>
@@ -746,8 +749,11 @@ const LandingPage = () => {
           <Card>
             <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
               <p className="text-sm text-blue-700">
-                <strong>Testovací přihlášení:</strong> test@test.cz (heslo ze
-                Supabase)
+                <strong>Testovací přihlášení:</strong>
+              </p>
+              <p className="text-xs text-blue-600 mt-1">
+                Pro otestování aplikace použijte vygenerované přihlašovací
+                údaje.
               </p>
             </div>
             <div className="flex mb-6 border-b">
@@ -765,6 +771,17 @@ const LandingPage = () => {
                 </button>
               ))}
             </div>
+            {/* ✅ NOVÁ ZPRÁVA PRO REGISTRACI */}
+            {activeTab === "register" && (
+              <div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <p className="text-sm text-yellow-800 font-semibold">
+                  ⚠️ Registrace není bohužel v této fázi projektu možná
+                </p>
+                <p className="text-xs text-yellow-700 mt-1">
+                  Pro testování použijte vygenerované přihlašovací údaje.
+                </p>
+              </div>
+            )}
             <form onSubmit={handleSubmit} className="space-y-4">
               {activeTab === "register" && (
                 <div>
@@ -1447,6 +1464,26 @@ const QuizPage = ({ onNavigate }) => {
             </p>
             <div className="grid gap-4">
               {topicAreas.map((area) => (
+                // <Card
+                //   key={area.id}
+                //   className="p-6 cursor-pointer hover:shadow-lg transition-all"
+                //   onClick={() => startQuiz(area.id)}
+                // >
+                //   <div className="flex items-center justify-between">
+                //     <div className="flex items-center space-x-4">
+                //       <span className="text-4xl">{area.icon}</span>
+                //       <div className="text-left">
+                //         <span className="text-xl font-semibold block">
+                //           {area.name}
+                //         </span>
+                //         <span className="text-sm text-gray-500">
+                //           10 náhodných otázek
+                //         </span>
+                //       </div>
+                //     </div>
+                //     <div className="text-blue-600 text-2xl">→</div>
+                //   </div>
+                // </Card>
                 <Card
                   key={area.id}
                   className="p-6 cursor-pointer hover:shadow-lg transition-all"
@@ -1689,6 +1726,9 @@ const ProgressChart = ({ data }) => {
         <div className="text-center">
           <div className="text-4xl mb-2">📊</div>
           <p>Zatím nejsou dostatečná data pro graf</p>
+          <p className="text-sm mt-2">
+            Začněte s testováním a vaše data se zde zobrazí
+          </p>
         </div>
       </div>
     );
@@ -1704,6 +1744,8 @@ const ProgressChart = ({ data }) => {
         backgroundColor: "rgba(37, 99, 235, 0.1)",
         tension: 0.4,
         fill: true,
+        pointRadius: 4, // ✅ Větší body pro lepší viditelnost
+        pointHoverRadius: 6,
       },
     ],
   };
@@ -1727,6 +1769,19 @@ const ProgressChart = ({ data }) => {
         max: 100,
         ticks: {
           callback: (value) => value + "%",
+          stepSize: 20, // ✅ Krok po 20%
+        },
+        grid: {
+          color: "rgba(0, 0, 0, 0.05)", // ✅ Jemnější mřížka
+        },
+      },
+      x: {
+        grid: {
+          display: false, // ✅ Skrýt vertikální mřížku
+        },
+        ticks: {
+          maxRotation: 45, // ✅ Rotace labelů pokud je jich hodně
+          minRotation: 0,
         },
       },
     },
@@ -1734,6 +1789,58 @@ const ProgressChart = ({ data }) => {
 
   return <Line data={chartData} options={options} />;
 };
+// const ProgressChart = ({ data }) => {
+//   if (!data || data.length === 0) {
+//     return (
+//       <div className="h-full flex items-center justify-center text-gray-500">
+//         <div className="text-center">
+//           <div className="text-4xl mb-2">📊</div>
+//           <p>Zatím nejsou dostatečná data pro graf</p>
+//         </div>
+//       </div>
+//     );
+//   }
+
+//   const chartData = {
+//     labels: data.map((d) => d.date),
+//     datasets: [
+//       {
+//         label: "Úspěšnost (%)",
+//         data: data.map((d) => d.accuracy),
+//         borderColor: "rgb(37, 99, 235)",
+//         backgroundColor: "rgba(37, 99, 235, 0.1)",
+//         tension: 0.4,
+//         fill: true,
+//       },
+//     ],
+//   };
+
+//   const options = {
+//     responsive: true,
+//     maintainAspectRatio: false,
+//     plugins: {
+//       legend: {
+//         display: false,
+//       },
+//       tooltip: {
+//         callbacks: {
+//           label: (context) => `${context.parsed.y}% úspěšnost`,
+//         },
+//       },
+//     },
+//     scales: {
+//       y: {
+//         beginAtZero: true,
+//         max: 100,
+//         ticks: {
+//           callback: (value) => value + "%",
+//         },
+//       },
+//     },
+//   };
+
+//   return <Line data={chartData} options={options} />;
+// };
 
 // Komponenta pro porovnání oblastí (Doughnut chart)
 const AreasComparisonChart = ({ data }) => {
@@ -1802,6 +1909,8 @@ const StatisticsPage = ({ onNavigate }) => {
   const [progressData, setProgressData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState(0);
+  //změna 30.10.2025
+  const [timeRange, setTimeRange] = useState("month"); // 'week', 'month', '3months', 'all'
 
   // Načtení statistik
   useEffect(() => {
@@ -1823,7 +1932,10 @@ const StatisticsPage = ({ onNavigate }) => {
         if (topics) setTopicStats(topics);
 
         // Data pro graf
-        const { data: progress } = await getProgressChartData(user.id);
+        const { data: progress } = await getProgressChartData(
+          user.id,
+          timeRange
+        );
         if (progress) setProgressData(progress);
       } catch (error) {
         console.error("Chyba při načítání statistik:", error);
@@ -1833,7 +1945,7 @@ const StatisticsPage = ({ onNavigate }) => {
     };
 
     loadStats();
-  }, [user]);
+  }, [user, timeRange]);
 
   if (loading) {
     return (
@@ -1884,11 +1996,16 @@ const StatisticsPage = ({ onNavigate }) => {
           <div className="mb-8 flex items-center justify-between">
             <h1 className="text-3xl font-bold">Revize & Statistiky</h1>
             <div className="flex space-x-3">
-              <select className="px-3 py-2 border border-gray-300 rounded-lg bg-white text-sm">
-                <option>Poslední týden</option>
-                <option>Poslední měsíc</option>
-                <option>Poslední 3 měsíce</option>
-                <option>Celková historie</option>
+              {/* <select className="px-3 py-2 border border-gray-300 rounded-lg bg-white text-sm"> */}
+              <select
+                className="px-3 py-2 border border-gray-300 rounded-lg bg-white text-sm"
+                value={timeRange}
+                onChange={(e) => setTimeRange(e.target.value)}
+              >
+                <option value="week">Poslední týden</option>
+                <option value="month">Poslední měsíc</option>
+                <option value="3months">Poslední 3 měsíce</option>
+                <option value="all">Celková historie</option>
               </select>
             </div>
           </div>

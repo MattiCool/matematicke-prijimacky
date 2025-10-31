@@ -124,29 +124,70 @@ export async function getOverallStats(userId) {
   }
 }
 
-// Získání dat pro graf pokroku v čase (poslední týden)
-export async function getProgressChartData(userId) {
+export const getProgressChartData = async (userId, timeRange = "month") => {
+  console.log("🔍 DEBUG: Funkce voláno s:", { userId, timeRange });
   try {
-    const oneWeekAgo = new Date();
-    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+    // Výpočet datumu od
+    const now = new Date();
+    let dateFrom;
 
-    const { data: answers, error } = await supabase
+    switch (timeRange) {
+      case "week":
+        dateFrom = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        break;
+      case "month":
+        dateFrom = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+        break;
+      case "3months":
+        dateFrom = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
+        break;
+      case "all":
+        dateFrom = new Date("2000-01-01"); // Velmi starý datum
+        break;
+      default:
+        dateFrom = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+    }
+
+    console.log("📅 DEBUG: Filtrování od:", dateFrom.toISOString());
+
+    const { data, error } = await supabase
       .from("user_answers")
-      .select("is_correct, answered_at")
+      .select(
+        `
+        answered_at,
+        is_correct
+      `
+      )
       .eq("user_id", userId)
-      .gte("answered_at", oneWeekAgo.toISOString())
+      .gte("answered_at", dateFrom.toISOString())
       .order("answered_at", { ascending: true });
+
+    console.log("✅ DEBUG: Načteno odpovědí:", data.length);
+    console.log(
+      "📊 DEBUG: Data:",
+      data.map((d) => ({
+        date: new Date(d.answered_at).toLocaleDateString(),
+        correct: d.is_correct,
+      }))
+    );
 
     if (error) throw error;
 
-    // Seskupení podle dne
+    // Agregace dat po dnech
     const dailyStats = {};
 
-    answers.forEach((answer) => {
-      const date = new Date(answer.answered_at).toLocaleDateString("cs-CZ");
+    data.forEach((answer) => {
+      const date = new Date(answer.answered_at).toLocaleDateString("cs-CZ", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      });
 
       if (!dailyStats[date]) {
-        dailyStats[date] = { total: 0, correct: 0 };
+        dailyStats[date] = {
+          correct: 0,
+          total: 0,
+        };
       }
 
       dailyStats[date].total++;
@@ -158,14 +199,63 @@ export async function getProgressChartData(userId) {
     // Převod na formát pro graf
     const chartData = Object.entries(dailyStats).map(([date, stats]) => ({
       date,
-      accuracy:
-        stats.total > 0 ? Math.round((stats.correct / stats.total) * 100) : 0,
-      total: stats.total,
+      accuracy: Math.round((stats.correct / stats.total) * 100),
     }));
+
+    // Pokud nejsou data, vrátit prázdné pole
+    if (chartData.length === 0) {
+      return { data: [], error: null };
+    }
 
     return { data: chartData, error: null };
   } catch (error) {
-    console.error("❌ Chyba při načítání dat pro graf:", error);
-    return { data: null, error: error.message };
+    console.error("Chyba při načítání dat pro graf:", error);
+    return { data: [], error: error.message };
   }
-}
+};
+
+// Získání dat pro graf pokroku v čase (poslední týden)
+// export async function getProgressChartData(userId) {
+//   try {
+//     const oneWeekAgo = new Date();
+//     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+
+//     const { data: answers, error } = await supabase
+//       .from("user_answers")
+//       .select("is_correct, answered_at")
+//       .eq("user_id", userId)
+//       .gte("answered_at", oneWeekAgo.toISOString())
+//       .order("answered_at", { ascending: true });
+
+//     if (error) throw error;
+
+//     // Seskupení podle dne
+//     const dailyStats = {};
+
+//     answers.forEach((answer) => {
+//       const date = new Date(answer.answered_at).toLocaleDateString("cs-CZ");
+
+//       if (!dailyStats[date]) {
+//         dailyStats[date] = { total: 0, correct: 0 };
+//       }
+
+//       dailyStats[date].total++;
+//       if (answer.is_correct) {
+//         dailyStats[date].correct++;
+//       }
+//     });
+
+//     // Převod na formát pro graf
+//     const chartData = Object.entries(dailyStats).map(([date, stats]) => ({
+//       date,
+//       accuracy:
+//         stats.total > 0 ? Math.round((stats.correct / stats.total) * 100) : 0,
+//       total: stats.total,
+//     }));
+
+//     return { data: chartData, error: null };
+//   } catch (error) {
+//     console.error("❌ Chyba při načítání dat pro graf:", error);
+//     return { data: null, error: error.message };
+//   }
+// }
