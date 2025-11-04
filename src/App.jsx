@@ -641,6 +641,17 @@ const Sidebar = ({
   ];
 
   const handleNavigation = (key) => {
+    // Pokud jsme na výsledkové obrazovce a klikneme na "Testování"
+    if (activeItem === "quiz" && key === "quiz") {
+      // Reset kvízu a přejdi na výběr oblastí
+      // To uděláme pomocí speciálního callbacku
+      if (onExitRequest) {
+        onExitRequest(); // Zavolá reset
+      }
+      onNavigate(key);
+      return;
+    }
+
     // Pokud je uživatel v testu a chce jít jinam než na quiz, zobrazte potvrzení
     if (isInQuiz && activeItem === "quiz" && key !== "quiz") {
       if (onExitRequest) {
@@ -1118,7 +1129,13 @@ const DashboardPage = ({ onNavigate }) => {
 };
 
 // Komponenta pro výsledky testu
-const QuizResults = ({ results, topicArea, onNavigate, onRetry }) => {
+const QuizResults = ({
+  results,
+  topicArea,
+  onNavigate,
+  onRetry,
+  startQuiz,
+}) => {
   const accuracyColor =
     results.percentage >= 80
       ? "text-green-600"
@@ -1154,13 +1171,42 @@ const QuizResults = ({ results, topicArea, onNavigate, onRetry }) => {
 
   return (
     <div className="flex">
-      <Sidebar activeItem="quiz" onNavigate={onNavigate} isInQuiz={false} />
+      {/* <Sidebar activeItem="quiz" onNavigate={onNavigate} isInQuiz={false} /> */}
+      <Sidebar
+        activeItem="quiz"
+        onNavigate={onNavigate}
+        isInQuiz={false}
+        onExitRequest={() => {
+          startQuiz(null); // ← Reset kvízu
+        }}
+      />
 
       <div className="ml-64 flex-1 p-8 bg-gray-50 min-h-screen">
         <div className="max-w-3xl mx-auto">
           <Card className="text-center p-8">
+            {/* NOVÝ KŘÍŽEK vpravo nahoře */}
+            {/* <button
+              onClick={() => {
+                startQuiz(null);
+                onNavigate("quiz");
+              }}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl transition-colors"
+              title="Zavřít a vrátit se k výběru oblasti"
+            >
+              ✕
+            </button> */}
             {/* Hlavička */}
-            <div className="mb-6">
+            <div className="mb-6 relative">
+              <button
+                onClick={() => {
+                  startQuiz(null);
+                  onNavigate("quiz");
+                }}
+                className="absolute -top-2 right-0 text-gray-400 hover:text-gray-600 text-3xl transition-colors"
+                title="Zavřít"
+              >
+                ✕
+              </button>
               <div className="text-6xl mb-4">{message.emoji}</div>
               <h1 className="text-3xl font-bold mb-2">Test dokončen!</h1>
               <p className="text-lg text-gray-600">
@@ -1264,6 +1310,20 @@ const QuizResults = ({ results, topicArea, onNavigate, onRetry }) => {
                 <span>🔄</span>
                 <span>Zopakovat test</span>
               </Button>
+
+              {/* ✅ NOVÉ TLAČÍTKO*/}
+              {/*               <Button
+                variant="outline"
+                onClick={() => {
+                  startQuiz(null); // ✅ Reset kvízu
+                  onNavigate("quiz"); // ✅ Přejdi na quiz
+                }}
+                size="lg"
+                className="flex items-center gap-2"
+              >
+                <span>🎯</span>
+                <span>K testování</span>
+              </Button> */}
               <Button
                 variant="outline"
                 onClick={() => onNavigate("statistics")}
@@ -1349,6 +1409,7 @@ const QuizPage = ({ onNavigate }) => {
         topicArea={currentArea}
         onNavigate={onNavigate}
         onRetry={() => startQuiz(currentQuizMode)}
+        startQuiz={startQuiz}
       />
     );
   }
@@ -1443,7 +1504,7 @@ const QuizPage = ({ onNavigate }) => {
 
   // ✅ UPRAVENO - výpočet celkového počtu otázek v testu (vždy 10)
   const getTotalQuestions = () => {
-    return 10; // Pevný limit
+    return 5; // Pevný limit
   };
 
   // Pokud není vybraná žádná otázka - výběr oblasti

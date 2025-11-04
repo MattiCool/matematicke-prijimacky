@@ -1,7 +1,7 @@
 import { supabase } from "./supabase";
 
 // Načtení příkladů podle tematické oblasti (s limitem a náhodným výběrem)
-export async function getProblemsByTopic(topicAreaId, limit = 10) {
+export async function getProblemsByTopic(topicAreaId, limit = 5) {
   try {
     // Nejdřív zjistíme celkový počet příkladů v dané oblasti
     const { count, error: countError } = await supabase
@@ -60,7 +60,7 @@ export async function getProblemsByTopic(topicAreaId, limit = 10) {
 }
 
 // Načtení všech příkladů (mix test) - limit 10 náhodných
-export async function getAllProblems(limit = 10) {
+export async function getAllProblems(limit = 5) {
   try {
     const { count, error: countError } = await supabase
       .from("problems")
