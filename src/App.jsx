@@ -1518,7 +1518,7 @@ const QuizPage = ({ onNavigate }) => {
               Vyberte oblast pro testování
             </h1>
             <p className="text-gray-600 mb-2">
-              Každý test obsahuje 10 náhodných otázek
+              Každý test obsahuje 5 náhodných otázek
             </p>
             <p className="text-sm text-gray-500 mb-8">
               Klikněte na jednu z oblastí níže
@@ -1558,7 +1558,7 @@ const QuizPage = ({ onNavigate }) => {
                           {area.name}
                         </span>
                         <span className="text-sm text-gray-500">
-                          10 náhodných otázek
+                          5 náhodných otázek
                         </span>
                       </div>
                     </div>
