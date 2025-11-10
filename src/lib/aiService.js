@@ -83,35 +83,61 @@ Odpověď:`;
 /**
  * Volání Claude API
  */
+// async function callClaude(prompt) {
+//   try {
+//     // ✅ DEBUG (volitelné - odstraň později)
+//     console.log("🔑 Claude API Key:", CLAUDE_API_KEY ? "Nastavený" : "CHYBÍ!");
+//     const response = await fetch("https://api.anthropic.com/v1/messages", {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json",
+//         "x-api-key": CLAUDE_API_KEY,
+//         "anthropic-version": "2023-06-01",
+//       },
+//       body: JSON.stringify({
+//         model: "claude-3-5-sonnet-20241022", // Nejnovější model
+//         max_tokens: 1500,
+//         messages: [
+//           {
+//             role: "user",
+//             content: prompt,
+//           },
+//         ],
+//       }),
+//     });
+
+//     if (!response.ok) {
+//       const error = await response.json();
+//       console.error("Claude API error:", error);
+//       throw new Error(`Claude API: ${error.error?.message || "Neznámá chyba"}`);
+//     }
+
+//     const data = await response.json();
+//     console.log(
+//       "✅ Claude odpověděl:",
+//       data.content[0].text.substring(0, 100) + "..."
+//     ); // Debug
+//     return data.content[0].text;
+//   } catch (error) {
+//     console.error("Chyba při volání Claude:", error);
+//     throw error;
+//   }
+// }
 async function callClaude(prompt) {
   try {
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
+    const response = await fetch("/api/claude", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": CLAUDE_API_KEY,
-        "anthropic-version": "2023-06-01",
-      },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-20250514", // Nejnovější model
-        max_tokens: 1500,
-        messages: [
-          {
-            role: "user",
-            content: prompt,
-          },
-        ],
-      }),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ prompt }),
     });
 
     if (!response.ok) {
       const error = await response.json();
-      console.error("Claude API error:", error);
-      throw new Error(`Claude API: ${error.error?.message || "Neznámá chyba"}`);
+      throw new Error(error.error?.message || "Neznámá chyba");
     }
 
     const data = await response.json();
-    return data.content[0].text;
+    return data.text;
   } catch (error) {
     console.error("Chyba při volání Claude:", error);
     throw error;
