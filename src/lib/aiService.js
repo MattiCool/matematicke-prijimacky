@@ -123,8 +123,13 @@ Odpověď:`;
 //     throw error;
 //   }
 // }
+/**
+ * Volání Claude API přes Vercel serverless funkci
+ */
 async function callClaude(prompt) {
   try {
+    console.log("🔵 Volám Claude přes /api/claude...");
+
     const response = await fetch("/api/claude", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -133,10 +138,12 @@ async function callClaude(prompt) {
 
     if (!response.ok) {
       const error = await response.json();
+      console.error("Claude API error:", error);
       throw new Error(error.error?.message || "Neznámá chyba");
     }
 
     const data = await response.json();
+    console.log("✅ Claude odpověděl úspěšně");
     return data.text;
   } catch (error) {
     console.error("Chyba při volání Claude:", error);
