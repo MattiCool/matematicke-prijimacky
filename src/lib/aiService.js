@@ -1,7 +1,7 @@
 // src/lib/aiService.js
 
-const CLAUDE_API_KEY = import.meta.env.VITE_CLAUDE_API_KEY;
-const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
+// const CLAUDE_API_KEY = import.meta.env.VITE_CLAUDE_API_KEY;
+// const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
 /**
@@ -21,15 +21,28 @@ export async function generateExplanation(problem, userAnswer, attempt = 1) {
   // Vytvoř prompt pro AI
   const prompt = createPrompt(problem, correctOption, selectedOption, attempt);
 
-  // Zvol AI poskytovatele (priorita: Claude > OpenAI > Gemini)
-  if (CLAUDE_API_KEY) {
+  //   // Zvol AI poskytovatele (priorita: Claude > OpenAI > Gemini)
+  //   if (CLAUDE_API_KEY) {
+  //     return await callClaude(prompt);
+  //   } else if (OPENAI_API_KEY) {
+  //     return await callOpenAI(prompt);
+  //   } else if (GEMINI_API_KEY) {
+  //     return await callGemini(prompt);
+  //   } else {
+  //     throw new Error("Žádný AI API klíč není nastaven! Přidej do .env souboru.");
+  //   }
+  // }
+
+  // ✅ VŽDY volej Claude serverless funkci (funguje i na Vercelu)
+  try {
     return await callClaude(prompt);
-  } else if (OPENAI_API_KEY) {
-    return await callOpenAI(prompt);
-  } else if (GEMINI_API_KEY) {
-    return await callGemini(prompt);
-  } else {
-    throw new Error("Žádný AI API klíč není nastaven! Přidej do .env souboru.");
+  } catch (error) {
+    console.error("Claude selhalo, fallback na Gemini:", error);
+    // Fallback pouze pokud Claude úplně selže
+    if (GEMINI_API_KEY) {
+      return await callGemini(prompt);
+    }
+    throw new Error("Všechny AI služby selhaly");
   }
 }
 
