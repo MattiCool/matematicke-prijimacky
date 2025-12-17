@@ -741,9 +741,7 @@ const LandingPage = () => {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       <header className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="text-2xl font-bold text-blue-600">
-            📊 Matematické přijímačky
-          </div>
+          <div className="text-2xl font-bold text-blue-600">📊 MathForFun</div>
         </div>
       </header>
       <div className="max-w-7xl mx-auto px-4 py-16">
