@@ -7,7 +7,7 @@ import {
 } from "./lib/authService";
 import { getProblemsByTopic, getAllProblems } from "./lib/problemsService";
 
-// Mock Data - s podporou obrázků (můžete smazat po přechodu na DB)
+// Mock Data - s podporou obrázků
 const mockProblems = [
   {
     id: 1,
@@ -380,7 +380,7 @@ const QuizProvider = ({ children }) => {
   const [problems, setProblems] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // ✅ NOVÉ - sledování času
+  //sledování času
   const [questionStartTime, setQuestionStartTime] = useState(null);
 
   const loadProblems = async (topicId) => {
@@ -435,12 +435,12 @@ const QuizProvider = ({ children }) => {
     return unansweredProblems.length > 0 ? unansweredProblems[0] : null;
   };
 
-  // ✅ UPRAVENÁ funkce submitAnswer - s ukládáním do DB
+  //funkce submitAnswer - s ukládáním do DB
   const submitAnswer = async (userId, problemId, optionId) => {
     const problem = problems.find((p) => p.id === problemId);
     const option = problem.options.find((o) => o.id === optionId);
 
-    // ✅ Výpočet času stráveného nad otázkou
+    //Výpočet času stráveného nad otázkou
     const timeSpent = questionStartTime
       ? Math.round((Date.now() - questionStartTime) / 1000)
       : 0;
@@ -457,7 +457,7 @@ const QuizProvider = ({ children }) => {
     setCurrentSessionAnswers((prev) => [...prev, answer]);
     setUserAnswers((prev) => [...prev, answer]);
 
-    // ✅ NOVÉ - Uložení do databáze
+    //Uložení do databáze
     if (userId) {
       const { saveUserAnswer } = await import("./lib/answerService");
       const { error } = await saveUserAnswer(
@@ -476,17 +476,17 @@ const QuizProvider = ({ children }) => {
     return answer;
   };
 
-  // ✅ NOVÁ funkce pro nastavení další otázky
+  //funkce pro nastavení další otázky
   const moveToNextProblem = () => {
     const nextProblem = getNextProblem();
     if (nextProblem) {
       setCurrentProblem(nextProblem);
-      setQuestionStartTime(Date.now()); // ✅ Restart času pro novou otázku
+      setQuestionStartTime(Date.now()); //Restart času pro novou otázku
     }
     return nextProblem;
   };
 
-  // ✅ NOVÁ funkce pro načtení statistik
+  // funkce pro načtení statistik
   const loadUserStats = async (userId) => {
     if (!userId) return;
 
@@ -510,7 +510,7 @@ const QuizProvider = ({ children }) => {
   const finishQuiz = () => {
     setShowResults(true);
     setCurrentProblem(null);
-    setQuestionStartTime(null); // ✅ Reset času
+    setQuestionStartTime(null); //Reset času
   };
 
   const getQuizResults = () => {
@@ -641,10 +641,10 @@ const Sidebar = ({
   ];
 
   const handleNavigation = (key) => {
-    // Pokud jsme na výsledkové obrazovce a klikneme na "Testování"
+    // Pokud jsem na výsledkové obrazovce a kliknu na "Testování"
     if (activeItem === "quiz" && key === "quiz") {
-      // Reset kvízu a přejdi na výběr oblastí
-      // To uděláme pomocí speciálního callbacku
+      // Reset kvízu a přechod na výběr oblastí
+      // To udělám pomocí speciálního callbacku
       if (onExitRequest) {
         onExitRequest(); // Zavolá reset
       }
@@ -652,7 +652,7 @@ const Sidebar = ({
       return;
     }
 
-    // Pokud je uživatel v testu a chce jít jinam než na quiz, zobrazte potvrzení
+    // Pokud je uživatel v testu a chce jít jinam než na quiz, zobrazím potvrzení
     if (isInQuiz && activeItem === "quiz" && key !== "quiz") {
       if (onExitRequest) {
         onExitRequest();
@@ -663,7 +663,7 @@ const Sidebar = ({
   };
 
   const handleLogout = () => {
-    // Pokud je uživatel v testu, zobrazte potvrzení
+    // Pokud je uživatel v testu, zobrazím potvrzení
     if (isInQuiz && activeItem === "quiz") {
       if (onExitRequest) {
         onExitRequest();
@@ -780,7 +780,7 @@ const LandingPage = () => {
                 </button>
               ))}
             </div>
-            {/* ✅ NOVÁ ZPRÁVA PRO REGISTRACI */}
+            {/* NOVÁ ZPRÁVA PRO REGISTRACI */}
             {activeTab === "register" && (
               <div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
                 <p className="text-sm text-yellow-800 font-semibold">
@@ -895,7 +895,7 @@ const DashboardPage = ({ onNavigate }) => {
   const [topicStats, setTopicStats] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // ✅ Načtení statistik při načtení komponenty
+  //Načtení statistik při načtení komponenty
   useEffect(() => {
     const loadStats = async () => {
       if (!user?.id) return;
@@ -973,7 +973,7 @@ const DashboardPage = ({ onNavigate }) => {
             </p>
           </div>
 
-          {/* ✅ Statistické karty s reálnými daty */}
+          {/* Statistické karty s reálnými daty */}
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <StatCard
               title="Celková úspěšnost"
@@ -1003,7 +1003,7 @@ const DashboardPage = ({ onNavigate }) => {
             />
           </div>
 
-          {/* ✅ Pokud nemá žádné odpovědi, zobrazit uvítací zprávu */}
+          {/* Pokud nemám žádné odpovědi, zobrazím uvítací zprávu */}
           {stats.totalProblems === 0 && (
             <Card className="mb-8 bg-blue-50 border-blue-200">
               <div className="text-center py-8">
@@ -1019,7 +1019,7 @@ const DashboardPage = ({ onNavigate }) => {
             </Card>
           )}
 
-          {/* ✅ Tematické oblasti s reálnými statistikami */}
+          {/* Tematické oblasti s reálnými statistikami */}
           <Card>
             <h2 className="text-xl font-bold mb-4">Tematické oblasti</h2>
             <div className="space-y-4">
@@ -1075,7 +1075,7 @@ const DashboardPage = ({ onNavigate }) => {
             </div>
           </Card>
 
-          {/* ✅ Rychlé statistiky podle oblastí - vizuální přehled */}
+          {/*Rychlé statistiky podle oblastí - vizuální přehled */}
           {stats.totalProblems > 0 && (
             <Card className="mt-8">
               <h2 className="text-xl font-bold mb-4">
@@ -1182,7 +1182,7 @@ const QuizResults = ({
       <div className="ml-64 flex-1 p-8 bg-gray-50 min-h-screen">
         <div className="max-w-3xl mx-auto">
           <Card className="text-center p-8">
-            {/* NOVÝ KŘÍŽEK vpravo nahoře */}
+            {/* křížek vpravo nahoře */}
             {/* <button
               onClick={() => {
                 startQuiz(null);
@@ -1309,12 +1309,12 @@ const QuizResults = ({
                 <span>Zopakovat test</span>
               </Button>
 
-              {/* ✅ NOVÉ TLAČÍTKO*/}
+              {/*NOVÉ TLAČÍTKO*/}
               {/*               <Button
                 variant="outline"
                 onClick={() => {
-                  startQuiz(null); // ✅ Reset kvízu
-                  onNavigate("quiz"); // ✅ Přejdi na quiz
+                  startQuiz(null); // Reset kvízu
+                  onNavigate("quiz"); // Přejdi na quiz
                 }}
                 size="lg"
                 className="flex items-center gap-2"
@@ -1374,7 +1374,7 @@ const QuizPage = ({ onNavigate }) => {
   const [loadingExplanation, setLoadingExplanation] = useState(false);
   const [showExitConfirmation, setShowExitConfirmation] = useState(false);
 
-  // ✅ Načtení statistik při načtení komponenty
+  // Načtení statistik při načtení komponenty
   useEffect(() => {
     if (user?.id) {
       loadUserStats(user.id);
@@ -1396,7 +1396,7 @@ const QuizPage = ({ onNavigate }) => {
     );
   }
 
-  // ✅ NOVÉ - zobrazení výsledků po dokončení testu
+  // Zobrazení výsledků po dokončení testu
   if (showResults) {
     const results = getQuizResults();
     const currentArea = topicAreas.find((a) => a.id === currentQuizMode);
@@ -1435,7 +1435,7 @@ const QuizPage = ({ onNavigate }) => {
     onNavigate("dashboard");
   };
 
-  // ✅ Odeslání odpovědi - s ukládáním do databáze
+  // Odeslání odpovědi - s ukládáním do databáze
   const handleSubmit = async () => {
     if (selectedOption && user?.id) {
       const answer = await submitAnswer(
@@ -1448,7 +1448,7 @@ const QuizPage = ({ onNavigate }) => {
     }
   };
 
-  // ✅ Přechod na další otázku nebo ukončení testu
+  // Přechod na další otázku nebo ukončení testu
   const handleNextQuestion = () => {
     setShowFeedback(false);
     setSelectedOption(null);
@@ -1500,7 +1500,7 @@ const QuizPage = ({ onNavigate }) => {
     }
   };
 
-  // ✅ UPRAVENO - výpočet celkového počtu otázek v testu (vždy 10)
+  //Výpočet celkového počtu otázek v testu (vždy 10), potom tedy 5
   const getTotalQuestions = () => {
     return 5; // Pevný limit
   };
@@ -1583,7 +1583,7 @@ const QuizPage = ({ onNavigate }) => {
 
       <div className="ml-64 flex-1 p-8 bg-gray-50 min-h-screen">
         <div className="max-w-4xl mx-auto">
-          {/* ✅ UPRAVENO - Hlavička s počítadlem otázek */}
+          {/*Hlavička s počítadlem otázek */}
           <div className="mb-6 flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold">
@@ -1828,18 +1828,18 @@ const ProgressChart = ({ data }) => {
         max: 100,
         ticks: {
           callback: (value) => value + "%",
-          stepSize: 20, // ✅ Krok po 20%
+          stepSize: 20, // Krok po 20%
         },
         grid: {
-          color: "rgba(0, 0, 0, 0.05)", // ✅ Jemnější mřížka
+          color: "rgba(0, 0, 0, 0.05)", // Jemnější mřížka
         },
       },
       x: {
         grid: {
-          display: false, // ✅ Skrýt vertikální mřížku
+          display: false, // Skrýt vertikální mřížku
         },
         ticks: {
-          maxRotation: 45, // ✅ Rotace labelů pokud je jich hodně
+          maxRotation: 45, // Rotace labelů pokud je jich hodně
           minRotation: 0,
         },
       },
