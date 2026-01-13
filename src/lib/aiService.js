@@ -33,7 +33,7 @@ export async function generateExplanation(problem, userAnswer, attempt = 1) {
   //   }
   // }
 
-  // ✅ VŽDY volej Claude serverless funkci (funguje i na Vercelu)
+  // Vždy volám Claude serverless funkci (funguje i na Vercelu)
   try {
     return await callClaude(prompt);
   } catch (error) {
@@ -98,7 +98,7 @@ Odpověď:`;
  */
 // async function callClaude(prompt) {
 //   try {
-//     // ✅ DEBUG (volitelné - odstraň později)
+//     // DEBUG
 //     console.log("🔑 Claude API Key:", CLAUDE_API_KEY ? "Nastavený" : "CHYBÍ!");
 //     const response = await fetch("https://api.anthropic.com/v1/messages", {
 //       method: "POST",
@@ -212,7 +212,7 @@ async function callOpenAI(prompt) {
  */
 async function callGemini(prompt) {
   try {
-    // ✅ SPRÁVNÝ MODEL - gemini-2.0-flash (z tvého cURL)
+    //gemini-2.0-flash (z tvého cURL)
     const response = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
       {
@@ -252,7 +252,7 @@ async function callGemini(prompt) {
   }
 }
 /**
- * Uloží AI vysvětlení do databáze (volitelné - pro cache)
+ * Uloží AI vysvětlení do databáze
  */
 export async function saveExplanation(problemId, explanation, provider) {
   try {
@@ -274,7 +274,7 @@ export async function saveExplanation(problemId, explanation, provider) {
 }
 
 /**
- * Načte uložené vysvětlení z databáze (pokud existuje)
+ * Načte uložené vysvětlení z databáze
  */
 export async function getExplanation(problemId) {
   try {

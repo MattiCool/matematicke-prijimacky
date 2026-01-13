@@ -12,7 +12,7 @@ export async function getProblemsByTopic(topicAreaId, limit = 5) {
 
     if (countError) throw countError;
 
-    // Pokud je příkladů méně než limit, načteme všechny
+    // Pokud je příkladů méně než limit, načtuvšechny
     const actualLimit = Math.min(limit, count || 0);
 
     // Načtení náhodných příkladů pomocí PostgreSQL funkce random()
@@ -42,7 +42,7 @@ export async function getProblemsByTopic(topicAreaId, limit = 5) {
       .sort(() => Math.random() - 0.5)
       .slice(0, actualLimit);
 
-    // ✅ KLÍČOVÁ OPRAVA: Přejmenuj answer_options → options
+    // KLÍČOVÁ OPRAVA: Přejmenuj answer_options → options
     const problemsWithOptions = shuffledProblems.map((problem) => ({
       ...problem,
       options: problem.answer_options || [],
@@ -96,7 +96,7 @@ export async function getAllProblems(limit = 5) {
       .sort(() => Math.random() - 0.5)
       .slice(0, actualLimit);
 
-    // ✅ KLÍČOVÁ OPRAVA: Přejmenuj answer_options → options
+    // KLÍČOVÁ OPRAVA: Přejmenuj answer_options → options
     const problemsWithOptions = shuffledProblems.map((problem) => ({
       ...problem,
       options: problem.answer_options || [],
@@ -135,7 +135,7 @@ export async function getProblemById(problemId) {
 
     if (error) throw error;
 
-    // ✅ KLÍČOVÁ OPRAVA: Přejmenuj answer_options → options
+    // KLÍČOVÁ OPRAVA: Přejmenuj answer_options → options
     const problemWithOptions = {
       ...data,
       options: data.answer_options || [],
