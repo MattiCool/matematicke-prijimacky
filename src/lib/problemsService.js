@@ -51,6 +51,7 @@ export async function getProblemsByTopic(topicAreaId, limit = 5) {
     console.log(
       `✅ Načteno ${problemsWithOptions.length} náhodných příkladů z oblasti ${topicAreaId}`
     );
+    console.log("Načtené pole:", problems);
 
     return problemsWithOptions; // ✅ Vrať opravená data
   } catch (error) {
