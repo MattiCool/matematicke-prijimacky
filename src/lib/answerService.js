@@ -27,6 +27,13 @@ export async function saveUserAnswer(
     if (error) throw error;
 
     console.log("✅ Odpověď uložena:", data);
+    console.log({
+      userId,
+      problemId,
+      selectedOptionId,
+      isCorrect,
+      timeSpent,
+    });
     return { data, error: null };
   } catch (error) {
     console.error("❌ Chyba při ukládání odpovědi:", error);

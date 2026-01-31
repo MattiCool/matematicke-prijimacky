@@ -157,6 +157,7 @@ async function callClaude(prompt) {
 
     const data = await response.json();
     console.log("✅ Claude odpověděl úspěšně");
+    console.log(prompt.substring(0, 300));
     return data.text;
   } catch (error) {
     console.error("Chyba při volání Claude:", error);
